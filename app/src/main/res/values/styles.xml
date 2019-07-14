@@ -1,0 +1,14 @@
+<resources>
+
+    <!--App theme = AppCompat.NoActionBar, because when a theme with default action bar is used, that action bar
+    behaves differently in different Android API levels,instead we'll use the support library's toolbar, which "helps
+    ensure that your app will have consistent behavior across the widest range of devices"
+    (https://developer.android.com/training/appbar/setting-up)-->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@android:color/darker_gray</item>
+    </style>
+
+</resources>
