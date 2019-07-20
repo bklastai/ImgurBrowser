@@ -1,4 +1,4 @@
-package com.bklastai.imgurbrowser
+package com.bklastai.imgurbrowser.activities
 
 import android.app.SearchManager
 import android.content.Context
@@ -9,12 +9,14 @@ import android.view.Menu
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.android.volley.AuthFailureError
-import com.android.volley.Request.Method.GET
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
+import com.bklastai.imgurbrowser.R
+import com.bklastai.imgurbrowser.controllers.SearchResult
+import com.bklastai.imgurbrowser.controllers.SearchResultsAdapter
+//import com.android.volley.AuthFailureError
+//import com.android.volley.Request.Method.GET
+//import com.android.volley.Response
+//import com.android.volley.toolbox.JsonObjectRequest
 import org.json.JSONArray
-import org.json.JSONObject
 
 const val imgurUrlForm = "https://api.imgur.com/3/gallery/search/time/@d?q=@s&q_type=png"
 
@@ -40,27 +42,27 @@ class BrowserActivity : AppCompatActivity() {
 
     private fun handleIntent(intent: Intent) {
         if (Intent.ACTION_SEARCH == intent.action) {
-            val query = intent.getStringExtra(SearchManager.QUERY)
-            val url = imgurUrlForm.format(currentPage, query)
-            val request = object : JsonObjectRequest(GET, url, null, Response.Listener<JSONObject> { response ->
-                val success = response.optBoolean("success")
-                if (success) {
-                    resultsAdapter.addSearchResults(parseSearchResults(response.optJSONArray("data")))
-                }
-            }, Response.ErrorListener {
-                it.printStackTrace()
-            }) {
-                override fun getHeaders(): Map<String, String> {
-                    return try {
-                        HashMap<String, String>().apply {
-                            put("Authorization", "Client-ID 126701cd8332f32")
-                        }
-                    } catch (e: AuthFailureError) {
-                        emptyMap()
-                    }
-                }
-            }
-            VolleySingleton.getInstance(this).addToRequestQueue(request)
+//            val query = intent.getStringExtra(SearchManager.QUERY)
+//            val url = imgurUrlForm.format(currentPage, query)
+//            val request = object : JsonObjectRequest(GET, url, null, Response.Listener<JSONObject> { response ->
+//                val success = response.optBoolean("success")
+//                if (success) {
+//                    resultsAdapter.addSearchResults(parseSearchResults(response.optJSONArray("data")))
+//                }
+//            }, Response.ErrorListener {
+//                it.printStackTrace()
+//            }) {
+//                override fun getHeaders(): Map<String, String> {
+//                    return try {
+//                        HashMap<String, String>().apply {
+//                            put("Authorization", "Client-ID 126701cd8332f32")
+//                        }
+//                    } catch (e: AuthFailureError) {
+//                        emptyMap()
+//                    }
+//                }
+//            }
+//            VolleySingleton.getInstance(this).addToRequestQueue(request)
         }
     }
 

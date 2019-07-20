@@ -1,7 +1,8 @@
-package com.bklastai.imgurbrowser
+package com.bklastai.imgurbrowser.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.bklastai.imgurbrowser.R
 
 class ImageViewingActivity : AppCompatActivity() {
 
