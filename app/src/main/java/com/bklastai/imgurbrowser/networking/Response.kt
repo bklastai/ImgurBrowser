@@ -3,10 +3,14 @@ package com.bklastai.imgurbrowser.networking
 import com.google.gson.annotations.SerializedName
 
 data class Response(
-    @SerializedName("articles") val news: List<News>
+    @SerializedName("data") val searchResults: List<SearchResult>
 )
 
-data class News(
-    val title: String,
-    @SerializedName("urlToImage") val image: String
+data class SearchResult(
+    @SerializedName("title") val title: String,
+    @SerializedName("link") val image: String
 )
+
+enum class State {
+    DONE, LOADING, ERROR
+}

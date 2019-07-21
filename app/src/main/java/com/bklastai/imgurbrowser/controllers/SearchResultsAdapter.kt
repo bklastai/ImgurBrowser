@@ -1,48 +1,58 @@
 package com.bklastai.imgurbrowser.controllers
 
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bklastai.imgurbrowser.R
-import com.squareup.picasso.Picasso
+import com.bklastai.imgurbrowser.networking.SearchResult
+import com.bklastai.imgurbrowser.networking.State
+import com.bklastai.imgurbrowser.views.ListFooterViewHolder
+import com.bklastai.imgurbrowser.views.SearchResultViewHolder
 
-data class SearchResult(val title: String, val url: String)
+class SearchResultsAdapter(private val retry: () -> Unit)
+    : PagedListAdapter<SearchResult, RecyclerView.ViewHolder>(NewsDiffCallback) {
 
-class SearchResultsAdapter(var searchResults: ArrayList<SearchResult>) :
-    RecyclerView.Adapter<SearchResultsAdapter.SearchResultViewHolder>() {
+    private val DATA_VIEW_TYPE = 1
+    private val FOOTER_VIEW_TYPE = 2
 
-    inner class SearchResultViewHolder(cardView: View, val imageView: ImageView, val titleView: TextView) :
-        RecyclerView.ViewHolder(cardView)
+    private var state = State.LOADING
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultViewHolder {
-        val container = LayoutInflater.from(parent.context).inflate(R.layout.search_resul_item, parent, false)
-        val imageView: ImageView = container.findViewById(R.id.search_result_item_image)
-        val titleView: TextView = container.findViewById(R.id.search_result_item_title)
-        return SearchResultViewHolder(container, imageView, titleView)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return if (viewType == DATA_VIEW_TYPE) SearchResultViewHolder.create(parent) else ListFooterViewHolder.create(retry, parent)
     }
 
-    override fun onBindViewHolder(holder: SearchResultViewHolder, position: Int) {
-        val searchResult = getItem(position) ?: return
-        holder.titleView.text = searchResult.title
-        Picasso.get().load(searchResult.url).into(holder.imageView)
-
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (getItemViewType(position) == DATA_VIEW_TYPE)
+            (holder as SearchResultViewHolder).bind(getItem(position))
+        else (holder as ListFooterViewHolder).bind(state)
     }
 
-    private fun getItem(position: Int): SearchResult? {
-        return if (position >= 0 && position < searchResults.size) {
-            searchResults[position]
-        } else {
-            null
+    override fun getItemViewType(position: Int): Int {
+        return if (position < super.getItemCount()) DATA_VIEW_TYPE else FOOTER_VIEW_TYPE
+    }
+
+    companion object {
+        val NewsDiffCallback = object : DiffUtil.ItemCallback<SearchResult>() {
+            override fun areItemsTheSame(oldItem: SearchResult, newItem: SearchResult): Boolean {
+                return oldItem.title == newItem.title
+            }
+
+            override fun areContentsTheSame(oldItem: SearchResult, newItem: SearchResult): Boolean {
+                return oldItem == newItem
+            }
         }
     }
 
-    fun addSearchResults(newSearchResults: ArrayList<SearchResult>) {
-        searchResults.addAll(newSearchResults)
-        notifyDataSetChanged()
+    override fun getItemCount(): Int {
+        return super.getItemCount() + if (hasFooter()) 1 else 0
     }
 
-    override fun getItemCount() = searchResults.size
+    private fun hasFooter(): Boolean {
+        return super.getItemCount() != 0 && (state == State.LOADING || state == State.ERROR)
+    }
+
+    fun setState(state: State) {
+        this.state = state
+        notifyItemChanged(super.getItemCount())
+    }
 }

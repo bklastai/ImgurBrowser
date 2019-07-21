@@ -5,41 +5,41 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import com.bklastai.imgurbrowser.model.NewsDataSource
-import com.bklastai.imgurbrowser.model.NewsDataSourceFactory
+import com.bklastai.imgurbrowser.model.SearchResultsDataSource
+import com.bklastai.imgurbrowser.model.SearchResultsDataSourceFactory
 import com.bklastai.imgurbrowser.networking.NetworkService
-import com.bklastai.imgurbrowser.networking.News
+import com.bklastai.imgurbrowser.networking.SearchResult
 import com.bklastai.imgurbrowser.networking.State
 import io.reactivex.disposables.CompositeDisposable
 
-class NewsListViewModel : ViewModel() {
+class SearchResultsViewModel : ViewModel() {
 
     private val networkService = NetworkService.getService()
-    var newsList: LiveData<PagedList<News>>
+    var searchResultList: LiveData<PagedList<SearchResult>>
     private val compositeDisposable = CompositeDisposable()
     private val pageSize = 5
-    private val newsDataSourceFactory: NewsDataSourceFactory
+    private val searchResultsDataSourceFactory: SearchResultsDataSourceFactory
 
     init {
-        newsDataSourceFactory = NewsDataSourceFactory(compositeDisposable, networkService)
+        searchResultsDataSourceFactory = SearchResultsDataSourceFactory(compositeDisposable, networkService)
         val config = PagedList.Config.Builder()
             .setPageSize(pageSize)
             .setInitialLoadSizeHint(pageSize * 2)
             .setEnablePlaceholders(false)
             .build()
-        newsList = LivePagedListBuilder<Int, News>(newsDataSourceFactory, config).build()
+        searchResultList = LivePagedListBuilder<Int, SearchResult>(searchResultsDataSourceFactory, config).build()
     }
 
 
-    fun getState(): LiveData<State> = Transformations.switchMap<NewsDataSource,
-            State>(newsDataSourceFactory.newsDataSourceLiveData, NewsDataSource::state)
+    fun getState(): LiveData<State> = Transformations.switchMap<SearchResultsDataSource,
+            State>(searchResultsDataSourceFactory.newsDataSourceLiveData, SearchResultsDataSource::state)
 
     fun retry() {
-        newsDataSourceFactory.newsDataSourceLiveData.value?.retry()
+        searchResultsDataSourceFactory.newsDataSourceLiveData.value?.retry()
     }
 
     fun listIsEmpty(): Boolean {
-        return newsList.value?.isEmpty() ?: true
+        return searchResultList.value?.isEmpty() ?: true
     }
 
     override fun onCleared() {

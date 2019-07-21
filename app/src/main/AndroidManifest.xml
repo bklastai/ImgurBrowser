@@ -14,24 +14,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activities.NewsListActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name="com.bklastai.imgurbrowser.activities.BrowserActivity"
-            android:launchMode="singleTop">
+        <activity android:name=".activities.SearchResultsActivity"
+                  android:launchMode="singleTop">
             <!--it's a root activity with singleTop mode, so it won't be recreated upon a new search query but instead
             the system will call onNewIntent-->
             <intent-filter>
-                <!--<action android:name="android.intent.action.MAIN"/>-->
-                <!--<action android:name="android.intent.action.VIEW"/>-->
+                <action android:name="android.intent.action.MAIN"/>
                 <action android:name="android.intent.action.SEARCH" />
-                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <meta-data android:name="android.app.searchable"
                        android:resource="@xml/searchable"/>

@@ -5,17 +5,23 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface NetworkService {
 
-    @GET("v2/everything?q=sports&apiKey=aa67d8d98c8e4ad1b4f16dbd5f3be348")
-    fun getNews(@Query("page") page: Int, @Query("pageSize") pageSize: Int): Single<Response>
+    @GET("3/gallery/search/time/{window}/{page}")
+    fun getImages(@Path("window") window: String,
+                  @Path("page") page: Int,
+                  @Query("q") query: String,
+                  @Query("q_type") image_ext: String,
+                  @Header("Authorization") client_id: String): Single<Response>
 
     companion object {
         fun getService(): NetworkService {
             val retrofit = Retrofit.Builder()
-                .baseUrl("https://newsapi.org/")
+                .baseUrl("https://api.imgur.com/")
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
