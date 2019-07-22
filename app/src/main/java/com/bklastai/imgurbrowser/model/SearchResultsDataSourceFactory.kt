@@ -29,7 +29,7 @@ class SearchResultsDataSourceFactory(
         }
     }
 
-    fun setQuery(query: String) {
+    fun setNewQuery(query: String) {
         this.query = query
         searchResultsDataSource.value?.invalidate()
     }

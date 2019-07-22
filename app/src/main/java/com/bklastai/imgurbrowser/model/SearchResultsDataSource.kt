@@ -24,7 +24,6 @@ class SearchResultsDataSource(
 
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, SearchResult>) {
-        if (state.value == State.LOADING) return
         if (query.isEmpty()) {
             updateState(State.NOT_STARTED)
             callback.onResult(
@@ -53,7 +52,6 @@ class SearchResultsDataSource(
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, SearchResult>) {
-        if (state.value == State.LOADING) return
         if (query.isEmpty()) {
             throw IllegalStateException("Calling loadAfter when query is empty")
         }

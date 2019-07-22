@@ -1,11 +1,10 @@
 package com.bklastai.imgurbrowser.controllers
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import com.bklastai.imgurbrowser.model.SearchResultsDataSource
 import com.bklastai.imgurbrowser.model.SearchResultsDataSourceFactory
 import com.bklastai.imgurbrowser.networking.NetworkService
 import com.bklastai.imgurbrowser.networking.SearchResult
@@ -19,6 +18,8 @@ class SearchResultsViewModel : ViewModel() {
     private val compositeDisposable = CompositeDisposable()
     private val pageSize = 5
     private var searchResultsDataSourceFactory: SearchResultsDataSourceFactory
+
+    var currentQuery: MutableLiveData<String> = MutableLiveData()
 
     init {
         searchResultsDataSourceFactory = SearchResultsDataSourceFactory(compositeDisposable, networkService, "")
@@ -48,11 +49,12 @@ class SearchResultsViewModel : ViewModel() {
     }
 
     fun setQuery(query: String) {
-        searchResultsDataSourceFactory.setQuery(query)
+        currentQuery.postValue(query)
+        searchResultsDataSourceFactory.setNewQuery(query)
         initSearchResults()
     }
 
-    fun initSearchResults() {
+    private fun initSearchResults() {
         val config = PagedList.Config.Builder()
             .setPageSize(pageSize)
             .setInitialLoadSizeHint(pageSize * 2)
