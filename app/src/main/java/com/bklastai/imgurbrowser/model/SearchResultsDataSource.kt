@@ -13,7 +13,8 @@ import io.reactivex.schedulers.Schedulers
 
 class SearchResultsDataSource(
     private val networkService: NetworkService,
-    private val compositeDisposable: CompositeDisposable)
+    private val compositeDisposable: CompositeDisposable,
+    private var query: String)
     : PageKeyedDataSource<Int, SearchResult>() {
 
     var state: MutableLiveData<State> = MutableLiveData()
@@ -21,8 +22,13 @@ class SearchResultsDataSource(
 
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, SearchResult>) {
+        if (state.value == State.LOADING) return
+        if (query.isEmpty()) {
+            updateState(State.NOT_STARTED)
+            return
+        }
         updateState(State.LOADING)
-        compositeDisposable.add(networkService.getImages("all", 1, "cats",  "png", "Client-ID 126701cd8332f32")
+        compositeDisposable.add(networkService.getImages(1, query,  "png", "Client-ID 126701cd8332f32")
                 .subscribe(
                     { response ->
                         updateState(State.DONE)
@@ -40,8 +46,13 @@ class SearchResultsDataSource(
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, SearchResult>) {
+        if (state.value == State.LOADING) return
+        if (query.isEmpty()) {
+            updateState(State.NOT_STARTED)
+            return
+        }
         updateState(State.LOADING)
-        compositeDisposable.add(networkService.getImages("all", params.key, "cats",  "png", "Client-ID 126701cd8332f32")
+        compositeDisposable.add(networkService.getImages(params.key, query,  "png", "Client-ID 126701cd8332f32")
                 .subscribe(
                     { response ->
                         updateState(State.DONE)
@@ -57,8 +68,7 @@ class SearchResultsDataSource(
         )
     }
 
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, SearchResult>) {
-    }
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, SearchResult>) {}
 
     private fun updateState(state: State) {
         this.state.postValue(state)
@@ -75,5 +85,4 @@ class SearchResultsDataSource(
     private fun setRetry(action: Action?) {
         retryCompletable = if (action == null) null else Completable.fromAction(action)
     }
-
 }

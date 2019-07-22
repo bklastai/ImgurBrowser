@@ -29,8 +29,8 @@
         </activity>
 
         <activity
-            android:name="com.bklastai.imgurbrowser.activities.ImageViewingActivity"
-            android:parentActivityName="com.bklastai.imgurbrowser.activities.BrowserActivity"/>
+            android:name=".activities.ImageViewingActivity"
+            android:parentActivityName="com.bklastai.imgurbrowser.activities.SearchResultsActivity"/>
 
     </application>
 

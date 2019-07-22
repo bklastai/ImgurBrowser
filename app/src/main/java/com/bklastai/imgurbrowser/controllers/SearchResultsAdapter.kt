@@ -15,7 +15,7 @@ class SearchResultsAdapter(private val retry: () -> Unit)
     private val DATA_VIEW_TYPE = 1
     private val FOOTER_VIEW_TYPE = 2
 
-    private var state = State.LOADING
+    private var state = State.NOT_STARTED
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == DATA_VIEW_TYPE) SearchResultViewHolder.create(parent) else ListFooterViewHolder.create(retry, parent)

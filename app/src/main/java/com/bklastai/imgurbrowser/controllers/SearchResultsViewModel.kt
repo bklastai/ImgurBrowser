@@ -15,35 +15,40 @@ import io.reactivex.disposables.CompositeDisposable
 class SearchResultsViewModel : ViewModel() {
 
     private val networkService = NetworkService.getService()
-    var searchResultList: LiveData<PagedList<SearchResult>>
+    lateinit var searchResults: LiveData<PagedList<SearchResult>>
     private val compositeDisposable = CompositeDisposable()
     private val pageSize = 5
-    private val searchResultsDataSourceFactory: SearchResultsDataSourceFactory
+    private lateinit var searchResultsDataSourceFactory: SearchResultsDataSourceFactory
 
     init {
-        searchResultsDataSourceFactory = SearchResultsDataSourceFactory(compositeDisposable, networkService)
-        val config = PagedList.Config.Builder()
-            .setPageSize(pageSize)
-            .setInitialLoadSizeHint(pageSize * 2)
-            .setEnablePlaceholders(false)
-            .build()
-        searchResultList = LivePagedListBuilder<Int, SearchResult>(searchResultsDataSourceFactory, config).build()
+        initSearchResults("")
     }
 
 
-    fun getState(): LiveData<State> = Transformations.switchMap<SearchResultsDataSource,
-            State>(searchResultsDataSourceFactory.newsDataSourceLiveData, SearchResultsDataSource::state)
+    fun getState(): LiveData<State> {
+        return searchResultsDataSourceFactory.getState()
+    }
 
     fun retry() {
-        searchResultsDataSourceFactory.newsDataSourceLiveData.value?.retry()
+        searchResultsDataSourceFactory.searchResultsDataSource.value?.retry()
     }
 
     fun listIsEmpty(): Boolean {
-        return searchResultList.value?.isEmpty() ?: true
+        return searchResults.value?.isEmpty() ?: true
     }
 
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.dispose()
+    }
+
+    fun initSearchResults(query: String) {
+        searchResultsDataSourceFactory = SearchResultsDataSourceFactory(compositeDisposable, networkService, query)
+        val config = PagedList.Config.Builder()
+            .setPageSize(pageSize)
+            .setInitialLoadSizeHint(pageSize * 2)
+            .setEnablePlaceholders(true)
+            .build()
+        searchResults = LivePagedListBuilder(searchResultsDataSourceFactory, config).build()
     }
 }

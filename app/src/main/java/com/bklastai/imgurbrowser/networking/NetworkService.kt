@@ -11,9 +11,8 @@ import retrofit2.http.Query
 
 interface NetworkService {
 
-    @GET("3/gallery/search/time/{window}/{page}")
-    fun getImages(@Path("window") window: String,
-                  @Path("page") page: Int,
+    @GET("3/gallery/search/time/{page}")
+    fun getImages(@Path("page") page: Int,
                   @Query("q") query: String,
                   @Query("q_type") image_ext: String,
                   @Header("Authorization") client_id: String): Single<Response>

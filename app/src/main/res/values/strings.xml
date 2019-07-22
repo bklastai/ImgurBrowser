@@ -3,4 +3,9 @@
 
     <string name="menu_browser_activity_item_search">Search</string>
     <string name="menu_browser_activity_search_hint">e.g. Cats</string>
+
+    <string name="error_txt_no_results">No results.</string>
+    <string name="error_txt_error">Error. Tap to retry.</string>
+    <string name="error_txt_wtf">wtf</string>
+    <string name="error_txt_search_prompt">Search for something.</string>
 </resources>

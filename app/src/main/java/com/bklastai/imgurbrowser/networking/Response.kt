@@ -12,5 +12,5 @@ data class SearchResult(
 )
 
 enum class State {
-    DONE, LOADING, ERROR
+    NOT_STARTED, DONE, LOADING, ERROR
 }
