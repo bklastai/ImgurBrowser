@@ -15,7 +15,8 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".activities.SearchResultsActivity"
-                  android:launchMode="singleTop">
+                  android:launchMode="singleTop"
+                  android:windowSoftInputMode="stateAlwaysHidden">
             <!--it's a root activity with singleTop mode, so it won't be recreated upon a new search query but instead
             the system will call onNewIntent-->
             <intent-filter>

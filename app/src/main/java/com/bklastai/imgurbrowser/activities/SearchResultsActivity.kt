@@ -19,6 +19,9 @@ import android.view.MenuItem
 import com.bklastai.imgurbrowser.R
 import java.lang.IllegalStateException
 
+// major kudos to Dhiraj Sharma: https://medium.com/@sharmadhiraj.np/android-paging-library-step-by-step-implementation-guide-75417753d9b9
+// I haven't ever worked with rxJava, so his article helped me a lot
+
 class SearchResultsActivity : AppCompatActivity() {
 
     private lateinit var viewModel: SearchResultsViewModel
@@ -104,44 +107,37 @@ class SearchResultsActivity : AppCompatActivity() {
         viewModel.setQuery(query)
     }
 
-    lateinit var searchView: SearchView
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_browser_activity, menu)
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        val searchMenuItem = menu.findItem(R.id.search)
-        searchMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem): Boolean { return true }
-            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                setCurrentQuery("")
-                return true
-            }
-        })
-        searchView = (searchMenuItem.actionView as SearchView).apply {
+        val searchMenuItem = menu.findItem(R.id.search).apply {
+            setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+                override fun onMenuItemActionExpand(item: MenuItem): Boolean { return true }
+                override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                    setCurrentQuery("")
+                    return true
+                }
+            })
+        }
+        (searchMenuItem.actionView as SearchView).apply {
             setSearchableInfo(searchManager.getSearchableInfo(componentName))
             if (!viewModel.currentQuery.value.isNullOrEmpty()) {
                 searchMenuItem.expandActionView()
                 setQuery(viewModel.currentQuery.value as CharSequence, false)
+                clearFocus()
             }
-        }
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean { return false }
-            override fun onQueryTextChange(newText: String): Boolean {
-                // if text is the same, searchView query is being reset as part of activity reinitialization,
-                // so we don't need to clear the list
-                if (newText != viewModel.currentQuery.value) {
-                    setCurrentQuery("")
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String): Boolean { return false }
+                override fun onQueryTextChange(newText: String): Boolean {
+                    // if text is the same, searchView query is being reset as part of activity reinitialization,
+                    // so we don't need to clear the list
+                    if (newText != viewModel.currentQuery.value) {
+                        setCurrentQuery("")
+                    }
+                    return true
                 }
-                return true
-            }
-        })
-//        hideKeyboard()
+            })
+        }
         return true
     }
-
-//    private fun hideKeyboard() {
-//        if (!viewModel.currentQuery.value.isNullOrEmpty()) {
-//            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//            imm.hideSoftInputFromWindow(searchView.windowToken, 0)
-//        }
-//    }
 }

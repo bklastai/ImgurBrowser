@@ -11,7 +11,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
 import java.lang.IllegalStateException
-import java.util.*
 
 class SearchResultsDataSource(
     private val networkService: NetworkService,
