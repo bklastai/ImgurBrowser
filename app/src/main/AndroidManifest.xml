@@ -30,6 +30,7 @@
 
         <activity
             android:name=".activities.ImageViewingActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             android:parentActivityName="com.bklastai.imgurbrowser.activities.SearchResultsActivity"/>
 
     </application>
