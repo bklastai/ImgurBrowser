@@ -10,6 +10,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
+import java.lang.IllegalStateException
+import java.util.*
 
 class SearchResultsDataSource(
     private val networkService: NetworkService,
@@ -25,6 +27,11 @@ class SearchResultsDataSource(
         if (state.value == State.LOADING) return
         if (query.isEmpty()) {
             updateState(State.NOT_STARTED)
+            callback.onResult(
+                emptyList(),
+                null,
+                1
+            )
             return
         }
         updateState(State.LOADING)
@@ -48,8 +55,7 @@ class SearchResultsDataSource(
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, SearchResult>) {
         if (state.value == State.LOADING) return
         if (query.isEmpty()) {
-            updateState(State.NOT_STARTED)
-            return
+            throw IllegalStateException("Calling loadAfter when query is empty")
         }
         updateState(State.LOADING)
         compositeDisposable.add(networkService.getImages(params.key, query,  "png", "Client-ID 126701cd8332f32")

@@ -18,10 +18,11 @@ class SearchResultsViewModel : ViewModel() {
     lateinit var searchResults: LiveData<PagedList<SearchResult>>
     private val compositeDisposable = CompositeDisposable()
     private val pageSize = 5
-    private lateinit var searchResultsDataSourceFactory: SearchResultsDataSourceFactory
+    private var searchResultsDataSourceFactory: SearchResultsDataSourceFactory
 
     init {
-        initSearchResults("")
+        searchResultsDataSourceFactory = SearchResultsDataSourceFactory(compositeDisposable, networkService, "")
+        initSearchResults()
     }
 
 
@@ -37,13 +38,21 @@ class SearchResultsViewModel : ViewModel() {
         return searchResults.value?.isEmpty() ?: true
     }
 
+    fun listExists(): Boolean {
+        return searchResults.value != null
+    }
+
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.dispose()
     }
 
-    fun initSearchResults(query: String) {
-        searchResultsDataSourceFactory = SearchResultsDataSourceFactory(compositeDisposable, networkService, query)
+    fun setQuery(query: String) {
+        searchResultsDataSourceFactory.setQuery(query)
+        initSearchResults()
+    }
+
+    fun initSearchResults() {
         val config = PagedList.Config.Builder()
             .setPageSize(pageSize)
             .setInitialLoadSizeHint(pageSize * 2)

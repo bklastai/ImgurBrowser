@@ -35,20 +35,21 @@ class SearchResultsActivity : AppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this).get(SearchResultsViewModel::class.java)
         initAdapter()
-        updateState()
+        initState()
     }
 
     private fun initAdapter() {
         searchResultsAdapter = SearchResultsAdapter { viewModel.retry() }
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = searchResultsAdapter
+        viewModel.searchResults.observe(this, Observer {
+            searchResultsAdapter.submitList(it)
+        })
+
     }
 
-    private fun updateState() {
+    private fun initState() {
         txt_error.setOnClickListener { viewModel.retry() }
-        if (viewModel.getState().hasObservers()) {
-            viewModel.getState().removeObservers(this)
-        }
         viewModel.getState().observe(this, Observer { state ->
             if (viewModel.listIsEmpty()) {
                 var progressBarVisibility = View.GONE
@@ -82,12 +83,7 @@ class SearchResultsActivity : AppCompatActivity() {
     private fun setCurrentQuery(query: String) {
         if (query == currentQuery) return
         currentQuery = query
-        viewModel.searchResults.removeObservers(this)
-        viewModel.initSearchResults(currentQuery)
-        viewModel.searchResults.observe(this, Observer {
-            searchResultsAdapter.submitList(it)
-        })
-        updateState()
+        viewModel.setQuery(currentQuery)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {

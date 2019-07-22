@@ -28,4 +28,9 @@ class SearchResultsDataSourceFactory(
             it.state
         }
     }
+
+    fun setQuery(query: String) {
+        this.query = query
+        searchResultsDataSource.value?.invalidate()
+    }
 }
